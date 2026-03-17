@@ -834,7 +834,7 @@ Le sous-agent a accès aux outils (message, web_search, etc.) et peut communique
 ### Fournisseurs
 
 > [!NOTE]
-> Groq fournit la transcription vocale gratuite via Whisper. Si configuré, les messages audio de n'importe quel canal seront automatiquement transcrits au niveau de l'agent.
+> **La transcription vocale** fonctionne avec tout endpoint speech-to-text compatible OpenAI. Configurez-la dans la section `voice.transcription` (voir ci-dessous). L'API Whisper gratuite de Groq est également détectée automatiquement si une clé API Groq est présente.
 
 | Fournisseur              | Utilisation                              | Obtenir une Clé API                                    |
 | ------------------------ | ---------------------------------------- | ------------------------------------------------------ |
@@ -847,7 +847,7 @@ Le sous-agent a accès aux outils (message, web_search, etc.) et peut communique
 | `deepseek` (À tester)    | LLM (DeepSeek direct)                    | [platform.deepseek.com](https://platform.deepseek.com) |
 | `qwen`                   | LLM (Alibaba Qwen)                      | [dashscope.aliyuncs.com](https://dashscope.aliyuncs.com/compatible-mode/v1) |
 | `cerebras`               | LLM (Cerebras)                           | [cerebras.ai](https://api.cerebras.ai/v1)              |
-| `groq`                   | LLM + **Transcription vocale** (Whisper) | [console.groq.com](https://console.groq.com)           |
+| `groq`                   | LLM + Transcription vocale (Whisper) | [console.groq.com](https://console.groq.com)           |
 
 <details>
 <summary><b>Configuration Zhipu</b></summary>

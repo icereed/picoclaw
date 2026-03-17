@@ -480,7 +480,7 @@ Agent 读取 HEARTBEAT.md
 ### 提供商 (Providers)
 
 > [!NOTE]
-> Groq 通过 Whisper 提供免费的语音转录。如果配置了 Groq，任意渠道的音频消息都将在 Agent 层面自动转录为文字。
+> **语音转录**支持任何 OpenAI 兼容的 speech-to-text 端点。请在 `voice.transcription` 部分进行配置（见下文）。当配置了 Groq API 密钥时，Groq 的免费 Whisper API 也会被自动检测到。
 
 | 提供商               | 用途                         | 获取 API Key                                                         |
 | -------------------- | ---------------------------- | -------------------------------------------------------------------- |
@@ -492,7 +492,7 @@ Agent 读取 HEARTBEAT.md
 | `openai`     | LLM (GPT 直连)               | [platform.openai.com](https://platform.openai.com)                   |
 | `deepseek`   | LLM (DeepSeek 直连)          | [platform.deepseek.com](https://platform.deepseek.com)               |
 | `qwen`               | LLM (通义千问)               | [dashscope.console.aliyun.com](https://dashscope.console.aliyun.com) |
-| `groq`               | LLM + **语音转录** (Whisper) | [console.groq.com](https://console.groq.com)                         |
+| `groq`               | LLM + 语音转录 (Whisper) | [console.groq.com](https://console.groq.com)                         |
 | `cerebras`           | LLM (Cerebras 直连)          | [cerebras.ai](https://cerebras.ai)                                   |
 
 ### 模型配置 (model_list)

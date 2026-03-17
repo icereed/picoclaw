@@ -12,13 +12,20 @@ import (
 	"github.com/sipeed/picoclaw/pkg/config"
 )
 
-// Ensure GroqTranscriber satisfies the Transcriber interface at compile time.
-var _ Transcriber = (*GroqTranscriber)(nil)
+// Ensure OpenAITranscriber satisfies the Transcriber interface at compile time.
+var _ Transcriber = (*OpenAITranscriber)(nil)
 
 func TestGroqTranscriberName(t *testing.T) {
 	tr := NewGroqTranscriber("sk-test")
 	if got := tr.Name(); got != "groq" {
 		t.Errorf("Name() = %q, want %q", got, "groq")
+	}
+}
+
+func TestOpenAITranscriberName(t *testing.T) {
+	tr := NewOpenAITranscriber("my-provider", "sk-test", "https://example.com/v1", "whisper-1")
+	if got := tr.Name(); got != "my-provider" {
+		t.Errorf("Name() = %q, want %q", got, "my-provider")
 	}
 }
 
@@ -74,6 +81,45 @@ func TestDetectTranscriber(t *testing.T) {
 			},
 			wantName: "groq",
 		},
+		{
+			name: "voice transcription config takes highest priority",
+			cfg: &config.Config{
+				Voice: config.VoiceConfig{
+					Transcription: config.TranscriptionConfig{
+						APIBase: "https://api.openai.com/v1",
+						APIKey:  "sk-openai",
+						Model:   "whisper-1",
+					},
+				},
+				Providers: config.ProvidersConfig{
+					Groq: config.ProviderConfig{APIKey: "sk-groq-direct"},
+				},
+			},
+			wantName: "openai-compat",
+		},
+		{
+			name: "voice transcription config defaults model to whisper-1",
+			cfg: &config.Config{
+				Voice: config.VoiceConfig{
+					Transcription: config.TranscriptionConfig{
+						APIBase: "https://api.example.com/v1",
+						APIKey:  "sk-test",
+					},
+				},
+			},
+			wantName: "openai-compat",
+		},
+		{
+			name: "voice transcription config incomplete (missing key)",
+			cfg: &config.Config{
+				Voice: config.VoiceConfig{
+					Transcription: config.TranscriptionConfig{
+						APIBase: "https://api.example.com/v1",
+					},
+				},
+			},
+			wantNil: true,
+		},
 	}
 
 	for _, tc := range tests {
@@ -110,6 +156,12 @@ func TestTranscribe(t *testing.T) {
 			}
 			if r.Header.Get("Authorization") != "Bearer sk-test" {
 				t.Errorf("unexpected Authorization header: %s", r.Header.Get("Authorization"))
+			}
+			if err := r.ParseMultipartForm(10 << 20); err != nil {
+				t.Fatalf("failed to parse multipart form: %v", err)
+			}
+			if got := r.FormValue("model"); got != "whisper-large-v3" {
+				t.Errorf("model = %q, want %q", got, "whisper-large-v3")
 			}
 			w.Header().Set("Content-Type", "application/json")
 			_ = json.NewEncoder(w).Encode(TranscriptionResponse{
@@ -155,6 +207,29 @@ func TestTranscribe(t *testing.T) {
 		_, err := tr.Transcribe(context.Background(), filepath.Join(tmpDir, "nonexistent.ogg"))
 		if err == nil {
 			t.Fatal("expected error for missing file, got nil")
+		}
+	})
+
+	t.Run("custom model", func(t *testing.T) {
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if err := r.ParseMultipartForm(10 << 20); err != nil {
+				t.Fatalf("failed to parse multipart form: %v", err)
+			}
+			if got := r.FormValue("model"); got != "whisper-1" {
+				t.Errorf("model = %q, want %q", got, "whisper-1")
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(TranscriptionResponse{Text: "custom model result"})
+		}))
+		defer srv.Close()
+
+		tr := NewOpenAITranscriber("test", "sk-test", srv.URL, "whisper-1")
+		resp, err := tr.Transcribe(context.Background(), audioPath)
+		if err != nil {
+			t.Fatalf("Transcribe() error: %v", err)
+		}
+		if resp.Text != "custom model result" {
+			t.Errorf("Text = %q, want %q", resp.Text, "custom model result")
 		}
 	})
 }

@@ -514,7 +514,12 @@
     "monitor_usb": true
   },
   "voice": {
-    "echo_transcription": false
+    "echo_transcription": false,
+    "transcription": {
+      "api_base": "",
+      "api_key": "",
+      "model": "whisper-1"
+    }
   },
   "gateway": {
     "host": "127.0.0.1",

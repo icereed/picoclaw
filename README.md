@@ -991,7 +991,7 @@ The subagent has access to tools (message, web_search, etc.) and can communicate
 ### Providers
 
 > [!NOTE]
-> Groq provides free voice transcription via Whisper. If configured, audio messages from any channel will be automatically transcribed at the agent level.
+> **Voice transcription** works with any OpenAI-compatible speech-to-text endpoint. Configure it in the `voice.transcription` section (see below). Groq's free Whisper API is also auto-detected when a Groq API key is present.
 
 | Provider     | Purpose                                 | Get API Key                                                  |
 | ------------ | --------------------------------------- | ------------------------------------------------------------ |
@@ -1003,10 +1003,36 @@ The subagent has access to tools (message, web_search, etc.) and can communicate
 | `openai`     | LLM (GPT direct)                        | [platform.openai.com](https://platform.openai.com)           |
 | `deepseek`   | LLM (DeepSeek direct)                   | [platform.deepseek.com](https://platform.deepseek.com)       |
 | `qwen`       | LLM (Qwen direct)                       | [dashscope.console.aliyun.com](https://dashscope.console.aliyun.com) |
-| `groq`       | LLM + **Voice transcription** (Whisper) | [console.groq.com](https://console.groq.com)                 |
+| `groq`       | LLM + Voice transcription (Whisper)     | [console.groq.com](https://console.groq.com)                 |
 | `cerebras`   | LLM (Cerebras direct)                   | [cerebras.ai](https://cerebras.ai)                           |
 | `vivgrid`    | LLM (Vivgrid direct)                    | [vivgrid.com](https://vivgrid.com)                           |
 | `azure`      | LLM (Azure OpenAI)                      | [portal.azure.com](https://portal.azure.com)                 |
+
+### Voice Transcription
+
+Audio messages from any channel are automatically transcribed when a transcription provider is configured. PicoClaw supports any OpenAI-compatible `/audio/transcriptions` endpoint (OpenAI, Groq, Cortecs, etc.).
+
+```json
+"voice": {
+  "echo_transcription": false,
+  "transcription": {
+    "api_base": "https://api.groq.com/openai/v1",
+    "api_key": "your-api-key",
+    "model": "whisper-large-v3"
+  }
+}
+```
+
+| Field      | Description                                      | Default     |
+| ---------- | ------------------------------------------------ | ----------- |
+| `api_base` | Base URL of the OpenAI-compatible API             | *(required)* |
+| `api_key`  | Bearer token for authentication                   | *(required)* |
+| `model`    | Whisper model name                                | `whisper-1` |
+
+**Environment variables:** `PICOCLAW_VOICE_TRANSCRIPTION_API_BASE`, `PICOCLAW_VOICE_TRANSCRIPTION_API_KEY`, `PICOCLAW_VOICE_TRANSCRIPTION_MODEL`
+
+> [!TIP]
+> If no `voice.transcription` is configured, PicoClaw falls back to auto-detecting a Groq API key from the `providers` or `model_list` sections.
 
 ### Model Configuration (model_list)
 

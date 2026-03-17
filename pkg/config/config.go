@@ -503,7 +503,15 @@ type DevicesConfig struct {
 }
 
 type VoiceConfig struct {
-	EchoTranscription bool `json:"echo_transcription" env:"PICOCLAW_VOICE_ECHO_TRANSCRIPTION"`
+	EchoTranscription bool                `json:"echo_transcription" env:"PICOCLAW_VOICE_ECHO_TRANSCRIPTION"`
+	Transcription     TranscriptionConfig `json:"transcription"`
+}
+
+// TranscriptionConfig configures an OpenAI-compatible speech-to-text endpoint.
+type TranscriptionConfig struct {
+	APIBase string `json:"api_base" env:"PICOCLAW_VOICE_TRANSCRIPTION_API_BASE"`
+	APIKey  string `json:"api_key"  env:"PICOCLAW_VOICE_TRANSCRIPTION_API_KEY"`
+	Model   string `json:"model"    env:"PICOCLAW_VOICE_TRANSCRIPTION_MODEL"`
 }
 
 type ProvidersConfig struct {

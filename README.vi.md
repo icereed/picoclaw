@@ -802,7 +802,7 @@ Subagent có quyền truy cập các công cụ (message, web_search, v.v.) và 
 ### Nhà cung cấp (Providers)
 
 > [!NOTE]
-> Groq cung cấp dịch vụ chuyển giọng nói thành văn bản miễn phí qua Whisper. Nếu đã cấu hình Groq, tin nhắn âm thanh từ bất kỳ kênh nào sẽ được tự động chuyển thành văn bản ở cấp độ agent.
+> **Chuyển giọng nói thành văn bản** hoạt động với bất kỳ endpoint speech-to-text tương thích OpenAI nào. Cấu hình trong phần `voice.transcription` (xem bên dưới). API Whisper miễn phí của Groq cũng được tự động phát hiện khi API key Groq được cấu hình.
 
 | Nhà cung cấp | Mục đích | Lấy API Key |
 | --- | --- | --- |
@@ -813,7 +813,7 @@ Subagent có quyền truy cập các công cụ (message, web_search, v.v.) và 
 | `anthropic` (Đang thử nghiệm) | LLM (Claude trực tiếp) | [console.anthropic.com](https://console.anthropic.com) |
 | `openai` (Đang thử nghiệm) | LLM (GPT trực tiếp) | [platform.openai.com](https://platform.openai.com) |
 | `deepseek` (Đang thử nghiệm) | LLM (DeepSeek trực tiếp) | [platform.deepseek.com](https://platform.deepseek.com) |
-| `groq` | LLM + **Chuyển giọng nói** (Whisper) | [console.groq.com](https://console.groq.com) |
+| `groq` | LLM + Chuyển giọng nói (Whisper) | [console.groq.com](https://console.groq.com) |
 | `qwen` | LLM (Qwen trực tiếp) | [dashscope.console.aliyun.com](https://dashscope.console.aliyun.com) |
 | `cerebras` | LLM (Cerebras trực tiếp) | [cerebras.ai](https://cerebras.ai) |
 

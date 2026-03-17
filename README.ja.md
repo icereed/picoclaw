@@ -795,7 +795,7 @@ HEARTBEAT_OK 応答         ユーザーが直接結果を受け取る
 ### プロバイダー
 
 > [!NOTE]
-> Groq は Whisper による無料の音声文字起こしを提供しています。設定すると、あらゆるチャンネルからの音声メッセージがエージェントレベルで自動的に文字起こしされます。
+> **音声文字起こし**は、OpenAI 互換の speech-to-text エンドポイントで動作します。`voice.transcription` セクションで設定してください（下記参照）。Groq の API キーが設定されている場合、Groq の無料 Whisper API も自動検出されます。
 
 | プロバイダー | 用途 | API キー取得先 |
 | --- | --- | --- |
@@ -806,7 +806,7 @@ HEARTBEAT_OK 応答         ユーザーが直接結果を受け取る
 | `anthropic`（要テスト） | LLM（Claude 直接） | [console.anthropic.com](https://console.anthropic.com) |
 | `openai`（要テスト） | LLM（GPT 直接） | [platform.openai.com](https://platform.openai.com) |
 | `deepseek`（要テスト） | LLM（DeepSeek 直接） | [platform.deepseek.com](https://platform.deepseek.com) |
-| `groq` | LLM + **音声文字起こし**（Whisper） | [console.groq.com](https://console.groq.com) |
+| `groq` | LLM + 音声文字起こし（Whisper） | [console.groq.com](https://console.groq.com) |
 | `cerebras` | LLM（Cerebras 直接） | [cerebras.ai](https://cerebras.ai) |
 
 ### 基本設定
