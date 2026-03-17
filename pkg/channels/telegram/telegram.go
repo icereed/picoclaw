@@ -108,6 +108,13 @@ func (c *TelegramChannel) Start(ctx context.Context) error {
 
 	c.ctx, c.cancel = context.WithCancel(ctx)
 
+	// Reset any lingering getUpdates/webhook connection on Telegram's side.
+	// Without this, a previous unclean shutdown (e.g. container kill) can
+	// cause 409 "Conflict: terminated by other getUpdates request" errors.
+	if err := c.bot.DeleteWebhook(c.ctx, nil); err != nil {
+		logger.WarnCF("telegram", "Failed to reset webhook state", map[string]any{"error": err.Error()})
+	}
+
 	updates, err := c.bot.UpdatesViaLongPolling(c.ctx, &telego.GetUpdatesParams{
 		Timeout: 30,
 	})
