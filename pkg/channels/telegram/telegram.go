@@ -46,6 +46,7 @@ type TelegramChannel struct {
 	chatIDs map[string]int64
 	ctx     context.Context
 	cancel  context.CancelFunc
+	updates <-chan telego.Update
 
 	registerFunc     func(context.Context, []commands.Definition) error
 	commandRegCancel context.CancelFunc
@@ -112,8 +113,9 @@ func (c *TelegramChannel) Start(ctx context.Context) error {
 	})
 	if err != nil {
 		c.cancel()
-		return fmt.Errorf("failed to start long polling: %w", err)
+		return fmt.Errorf("starting long polling: %w", err)
 	}
+	c.updates = updates
 
 	bh, err := th.NewBotHandler(c.bot, updates)
 	if err != nil {
@@ -148,12 +150,12 @@ func (c *TelegramChannel) Stop(ctx context.Context) error {
 	logger.InfoC("telegram", "Stopping Telegram bot...")
 	c.SetRunning(false)
 
-	// Stop the bot handler
+	// Stop the bot handler first — it reads from the updates chan.
 	if c.bh != nil {
 		_ = c.bh.StopWithContext(ctx)
 	}
 
-	// Cancel our context (stops long polling)
+	// Cancel the polling context (tells doLongPolling to exit).
 	if c.cancel != nil {
 		c.cancel()
 	}
@@ -161,6 +163,16 @@ func (c *TelegramChannel) Stop(ctx context.Context) error {
 		c.commandRegCancel()
 	}
 
+	// Wait for the long-polling goroutine to finish so that no stale
+	// getUpdates request is in-flight when a new instance starts.
+	if c.updates != nil {
+		//nolint:revive // drain remaining updates until channel closes
+		for range c.updates {
+		}
+		c.updates = nil
+	}
+
+	logger.InfoC("telegram", "Telegram bot stopped")
 	return nil
 }
 
